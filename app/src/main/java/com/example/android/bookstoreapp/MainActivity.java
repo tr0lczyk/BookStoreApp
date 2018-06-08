@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.example.android.bookstoreapp.data.BookContract.BookEntry;
 import com.example.android.bookstoreapp.data.BookDbHelper;
 
+import static com.example.android.bookstoreapp.data.BookDbHelper.LOG_TAG;
+
 public class MainActivity extends AppCompatActivity {
 
     private BookDbHelper dbHelper;
@@ -19,9 +21,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHelper = new BookDbHelper(this);
+        insertData();
+        queryData();
     }
 
-    private void InsertData(){
+    private void insertData(){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -31,8 +36,14 @@ public class MainActivity extends AppCompatActivity {
         values.put(BookEntry.PRODUCT_SUPPLIER_NAME, "Book Media");
         values.put(BookEntry.PRODUCT_SUPPLIER_PHONE_NUMBER, 123456789);
 
-        long newRowId = db.insert(BookEntry.TABLE_NAME,null,values);
-        Log.v("MainActivity", "New Row Id "+ newRowId);
+        long result = db.insert(BookEntry.TABLE_NAME,null,values);
+
+        if (result != -1) {
+            Log.d(LOG_TAG, "Data inserted successfully with row ID " + result);
+        } else {
+            Log.d(LOG_TAG, "Insert unsuccessful");
+        }
+        Log.v("MainActivity", "New Row Id "+ result);
     }
 
     private Cursor queryData(){
